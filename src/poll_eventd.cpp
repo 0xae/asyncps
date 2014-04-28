@@ -269,22 +269,16 @@ int EventDaemon::beginEventLoop(int timeout, int forever){
             }
             conn = &array[pfd->fd];
 
-            if(isFdReadable(conn->fd)){
-                if(conn->readOp != 0){                    
+            if(isFdReadable(conn->fd) && conn->readOp != 0){
                     conn->readOp(this, conn->fd, conn->data);
-                }
             }
             
-            if(isFdWriteable(conn->fd)){
-                if(conn->writeOp != 0){
+            if(isFdWriteable(conn->fd) && conn->writeOp != 0){
                     conn->writeOp(this, conn->fd, conn->data);
-                }
             }
-            
-            if(fdHasError(conn->fd)){
-                if(conn->errorOp != 0){
+
+            if(fdHasError(conn->fd) && conn->errorOp != 0){
                     conn->errorOp(this, conn->fd, conn->data);
-                }
             }
         }
         
