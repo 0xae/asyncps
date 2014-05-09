@@ -29,15 +29,18 @@ Start a new telnet session on another terminal:
     subscribe mongo
     hello freaks
 
-## Beware
-ahmmm, in the good design sense, asyncps is a complete mess, i am
-trying to design better programs and feel happy with that,
-i do not like its architecture, since i had to design his main
-components from scratch:
+## About
+asyncps is part of my research on distributed systems, so do not
+expect a state--of--the--heart design, losely coupled modules. It
+was written for testing purposes only.
+It is an effort to design better distributed systems, mainly
+composed by these modules:
 
-    * networking module
-    * logging module
-    * event programming module
+    * networking
+    * logging
+    * event programming
+    * efficient FSMs(Finit State Machines)
+    * and others
 
 ## Logging
 I am one of those freaky guys on logging, so i wrote
