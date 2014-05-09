@@ -31,8 +31,8 @@ Start a new telnet session on another terminal:
 
 ## About
 asyncps is part of my research on distributed systems, so do not
-expect a state--of--the--heart design, losely coupled modules. It
-was written for testing purposes only.
+expect a state--of--the--heart design or good coding practices, 
+losely coupled modules. It was written for testing purposes only.
 It is an effort to design better distributed systems, mainly
 composed by these modules:
 
@@ -40,6 +40,7 @@ composed by these modules:
     * logging
     * event programming
     * efficient FSMs(Finit State Machines)
+    * sync/async i/o
     * and others
 
 ## Logging
