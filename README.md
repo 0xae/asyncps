@@ -1,7 +1,7 @@
 asyncps
 =======
 
-An [asynchronous publish subscribe][http://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern] system on which subscribers dont block
+An [asynchronous publish subscribe](http://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) system on which subscribers dont block
 on new messages.
 
 
