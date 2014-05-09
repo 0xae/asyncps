@@ -1,36 +1,30 @@
 asyncps
 =======
-Asynchronous Publish Subscribe
-An asynchronous publish subscribe system on which subscribers dont block
+
+An [asynchronous publish subscribe][http://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern] system on which subscribers dont block
 on new messages.
 
 
-## building
+## Building
     $ cd src && make
 
 
-## publishing and subscribing
+## Publishing and Subscribing
 I didnt write a client yet, so
 you should use telnet to publish and subscribe.
 
-Start the server in a terminal:
+Start the server:
 
-    $ bin/asynpc 127.0.0.1 8080
+    $ bin/asynps 127.0.0.1 8080
 
 Start a telnet session in another terminal:
 
     $ telnet 127.0.0.1 8080
-    Trying 127.0.0.1...
-    Connected to 127.0.0.1.
-    Escape character is '^]'.
     publish mongo hello freaks
 
 
 Start a new telnet session on another terminal:
 
     $ telnet 127.0.0.1 8080
-    Trying 127.0.0.1...
-    Connected to 127.0.0.1.
-    Escape character is '^]'.
     subscribe mongo
     hello freaks
