@@ -28,3 +28,9 @@ Start a new telnet session on another terminal:
     $ telnet 127.0.0.1 8080
     subscribe mongo
     hello freaks
+
+## Logging
+I am one of those freaky guys on logging, so i wrote
+a small logger with color capabilities.
+Read the server logs for more logging.h, logging.cpp
+for more information.
