@@ -20,14 +20,14 @@ Start the server:
 Start a telnet session in another terminal:
 
     $ telnet 127.0.0.1 8080
-    publish mongo hello freaks
+    publish mongo "hello freaks"
 
 
 Start a new telnet session on another terminal:
 
     $ telnet 127.0.0.1 8080
     subscribe mongo
-    hello freaks
+    "hello freaks"
 
 ## About
 asyncps is part of my research on distributed systems, so do not
