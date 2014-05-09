@@ -13,10 +13,12 @@ on new messages.
 I didnt write a client yet, so
 you should use telnet to publish and subscribe.
 
-Start the server in a terminal
+Start the server in a terminal:
+
     $ bin/asynpc 127.0.0.1 8080
 
-Start a telnet session in another terminal
+Start a telnet session in another terminal:
+
     $ telnet 127.0.0.1 8080
     Trying 127.0.0.1...
     Connected to 127.0.0.1.
@@ -24,7 +26,8 @@ Start a telnet session in another terminal
     publish mongo hello freaks
 
 
-Start a new telnet session on another terminal
+Start a new telnet session on another terminal:
+
     $ telnet 127.0.0.1 8080
     Trying 127.0.0.1...
     Connected to 127.0.0.1.
