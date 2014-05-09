@@ -29,6 +29,15 @@ Start a new telnet session on another terminal:
     subscribe mongo
     hello freaks
 
+## Beware
+ahmmm, in the good design sense, asyncps is a complete mess, i am
+trying to design better programs and feel happy with that,
+i do not like its architecture, since i had to design his main
+components from scratch:
+    * networking module
+    * logging module
+    * event programming module
+
 ## Logging
 I am one of those freaky guys on logging, so i wrote
 a small logger with color capabilities.
