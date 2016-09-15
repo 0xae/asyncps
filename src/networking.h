@@ -32,9 +32,11 @@
 #ifdef true
 #undef true
 #endif
+
 #ifdef false
 #undef false
 #endif
+
 #ifdef bool
 #undef bool
 #endif

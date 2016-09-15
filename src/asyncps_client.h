@@ -9,13 +9,13 @@ namespace asyncps{
 using std::string;
 
 enum AsyncClientStatus{
-    // client connected to server
+    /* client connected to server */
     CONNECTED,
 
-    // still connecting
+    /* still connecting */
     CONNECTING,
 
-    // closed client
+    /* closed client */
     DOWN
 };
 
@@ -25,28 +25,23 @@ class AsyncClient{
     AsyncClientStatus status;
 
 public:
-    // connects client to (host, port)
+    /* connects client to (host, port) */
     AsyncClient(string host, int port, int blocking);
 
-    // a client created by
-    // an already connected socket
+    /* a client created by
+       an already connected socket 
+    */
     AsyncClient(int connectedfd){
         fd = connectedfd;
         status = CONNECTED;
         buffer = "";
     }
 
-    void storeMessage(string msg){
-        buffer = msg;
-    }
+    void storeMessage(string msg){ buffer = msg; }
 
-    string getMessage() const {
-        return buffer;
-    }
+    string getMessage() const { return buffer; }
 
-    int getFd() const {
-        return fd;
-    }
+    int getFd() const { return fd; }
 
     AsyncClientStatus getStatus() const {
         return status;
@@ -57,6 +52,7 @@ public:
     }
 };
 
-} // namespace asyncps
 
-#endif
+} /* namespace asyncps */
+
+#endif /* ASYNCPS_CLIENT_H */

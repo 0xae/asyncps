@@ -2,14 +2,13 @@ CXX=g++
 DEBUG=-Wall -DDEBUG -g -pedantic
 OPTIMIZATIONS=-O2
 
-ROOT=/home/ayrtoni/dev/research/asyncps
-
+ROOT=/home/ayrton/Development/Hackaton/asyncps
 TESTS=$(ROOT)/tests
 BIN=$(ROOT)/bin
 SRC=$(ROOT)/src
 
 
-all: asyncps_channel asyncps_client asyncps_server asyncps
+all: framework asyncps_channel asyncps_client asyncps_server asyncps testing
 
 asyncps:
 	g++ $(DEBUG) -o $(BIN)/asyncps \
@@ -20,6 +19,10 @@ asyncps:
 	                      asyncps_client.o  \
 	                      asyncps_server.o  \
 	                      asyncps.cpp
+framework:
+	g++ $(DEBUG) -c poll_eventd.cpp
+	g++ $(DEBUG) -c networking.cpp
+	g++ $(DEBUG) -c logging.cpp
 
 asyncps_channel:
 	g++ $(DEBUG) -c asyncps_channel.cpp
@@ -30,5 +33,5 @@ asyncps_client:
 asyncps_server:
 	g++ $(DEBUG) -c asyncps_server.cpp
 
-test_command:
+testing:
 	g++ $(DEBUG) -o $(TESTS)/testing test.cpp

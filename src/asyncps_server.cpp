@@ -12,15 +12,16 @@ using std::list;
 using logging::EVENT;
 using logging::ERROR;
 using logging::INFO;
+using logging::log;
 using eventd::EventDaemon;
 using eventd::ioOperation;
 using eventd::Connection;
 
 namespace asyncps {
 
-static void writeOp(EventDaemon *event, socket_t sockfd, void *data);
-static void readOp(EventDaemon *event, socket_t sockfd, void *data);
-static void acceptOp(EventDaemon *event, socket_t serverfd, void *data);
+static void writeCallback(EventDaemon *event, socket_t sockfd, void *data);
+static void readCallback(EventDaemon *event, socket_t sockfd, void *data);
+static void acceptCallback(EventDaemon *event, socket_t serverfd, void *data);
 
 AsyncServer::AsyncServer(string host, int port){
     fd = networking::getNioSocket();
@@ -35,8 +36,8 @@ AsyncServer::AsyncServer(string host, int port){
     event = new EventDaemon(30);
     event->registerFd(fd, EVENT_READ);
     event->setFdData(fd, this);
-    event->setFdReadOp(fd, acceptOp);
-    logging::log(INFO, "Server ready at %s:%d:%d\n", chost, port, fd);
+    event->setFdReadOp(fd, acceptCallback);
+    log(INFO, "Server ready at %s:%d:%d\n", chost, port, fd);
 }
 
 
@@ -73,11 +74,11 @@ void AsyncServer::deleteClient(int fd){
 void AsyncServer::parseRequest(int sockfd){
     AsyncClient *client = getClient(sockfd);
     string buffer = client->getMessage();
-    const char *str = buffer.c_str();
     int pos = buffer.find(" ");
 
     if(pos == -1){
-        client->storeMessage("Invalid command");
+        log(INFO, "BAD COMMAND '%s'\n", buffer.c_str());
+        client->storeMessage("<system:invalid_command>\n");
     }else{
         string command = buffer.substr(0, pos);
 
@@ -89,12 +90,12 @@ void AsyncServer::parseRequest(int sockfd){
 
             if(channels[channelId] == 0){
                 channels[channelId] = new AsyncChannel(channelId, sockfd);
-                logging::log(INFO, "channel '%s' created\n",
+                log(INFO, "channel '%s' created\n",
                                      channelId.c_str());
             }
 
             AsyncChannel *channel = channels[channelId];
-            logging::log(EVENT, "%d published '%s' to '%s'\n",
+            log(EVENT, "%d published '%s' to '%s'\n",
                                  sockfd, message.c_str(),
                                  channelId.c_str());
 
@@ -102,7 +103,7 @@ void AsyncServer::parseRequest(int sockfd){
                 channel->publish(message);            
                 client->storeMessage("ok");
             }else{
-                client->storeMessage("not_yours");            
+                client->storeMessage("(ERROR, channel_not_yours)");            
             }
 
         }else if(command == "subscribe"){
@@ -110,47 +111,47 @@ void AsyncServer::parseRequest(int sockfd){
             AsyncChannel *channel = channels[channelId];
 
             if(channel == 0){
-                logging::log(ERROR, "request for invalid channel '%s'\n",
+                log(ERROR, "request for invalid channel '%s'\n",
                                      channelId.c_str());
-                client->storeMessage("nochannel");
+                client->storeMessage("(ERROR, no_channel)");
 
             }else{
                 client->storeMessage(channel->getMessage());
-                logging::log(EVENT, "%d subscribed to channel '%s'\n",
+                log(EVENT, "%d subscribed to channel '%s'\n",
                                     sockfd, channelId.c_str());
             }
 
 
         }else{
-            logging::log(ERROR, "Invalid command '%s'\n", buffer.c_str());
+            log(ERROR, "Invalid command '%s'\n", buffer.c_str());
             client->storeMessage("Invalid command");        
         }
     }
 
     event->updateFdEvents(sockfd, EVENT_READ|EVENT_WRITE);
-    event->setFdWriteOp(sockfd, writeOp);
+    event->setFdWriteOp(sockfd, writeCallback);
 }
 
 
 
-static void acceptOp(EventDaemon *event, socket_t serverfd, void *data){
+static void acceptCallback(EventDaemon *event, socket_t serverfd, void *data){
     AsyncServer *server = (AsyncServer *)data;
     socket_t sockfd = accept(serverfd, 0 ,0);
-    logging::log(EVENT, "%d connected\n", sockfd);
+    log(EVENT, "%d connected\n", sockfd);
 
     server->registerClient(sockfd);
 
     // we wont install the writer op until
     // he sends us a message
     event->registerFd(sockfd, EVENT_READ);
-    event->setFdReadOp(sockfd, readOp);
+    event->setFdReadOp(sockfd, readCallback);
 
     // data is an AsyncServer instance
     event->setFdData(sockfd, data);
 }
 
 
-static void readOp(EventDaemon *event, socket_t sockfd, void *data){
+static void readCallback(EventDaemon *event, socket_t sockfd, void *data){
     AsyncServer *server = (AsyncServer*)data;
     char msg[500];
     memset(msg, 0, sizeof(msg));
@@ -158,7 +159,7 @@ static void readOp(EventDaemon *event, socket_t sockfd, void *data){
 
     // closed connection
     if(r == 0){
-        logging::log(EVENT, "%d disconnected\n", sockfd);
+        log(EVENT, "%d disconnected\n", sockfd);
         event->unregisterFd(sockfd);
         server->deleteClient(sockfd);
         close(sockfd);
@@ -166,21 +167,28 @@ static void readOp(EventDaemon *event, socket_t sockfd, void *data){
     }
 
     AsyncClient *client = server->getClient(sockfd);
-    client->storeMessage(msg);
-    server->parseRequest(sockfd);
+    string msgAsString = string(msg);
+    unsigned int newLine = msgAsString.find("\r\n");
+    string buffer = client->getMessage();
+
+    if(newLine != string::npos){
+        server->parseRequest(sockfd);
+    }
 }
 
 
-static void writeOp(EventDaemon *event, socket_t sockfd, void *data){
+static void writeCallback(EventDaemon *event, socket_t sockfd, void *data){
     AsyncServer *server = (AsyncServer *)data;
     AsyncClient *client = server->getClient(sockfd);
-    const char *msg = client->getMessage().c_str();
+    string msg = client->getMessage();
+    msg += "\r\n";
+    const char *buff = msg.c_str();
 
-    logging::log(EVENT, "%d sent '%s'\n", sockfd, msg);
-    logging::log(INFO, "Server sent '%s' to %d\n", msg, sockfd);
+    log(EVENT, "%d sent '%s'\n", sockfd, buff);
+    log(INFO, "Server sent '%s' to %d\n", buff, sockfd);
 
-    int len = strlen(msg);
-    write(sockfd, msg, len);
+    int len = strlen(buff);
+    write(sockfd, buff, len);
     client->storeMessage("");
 
     // we wont send him a message

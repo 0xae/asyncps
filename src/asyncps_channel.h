@@ -1,14 +1,15 @@
-#ifndef ASYNCPS_CHANNEL_H
-#define ASYNCPS_CHANNEL_H
 #include <list>
 #include <string>
+
+#ifndef ASYNCPS_CHANNEL_H
+#define ASYNCPS_CHANNEL_H
 
 using std::list;
 using std::string;
 
-namespace asyncps{
+namespace asyncps {
 
-class AsyncChannel{
+class AsyncChannel {
     string id;
     list<int> subscribers;
     int publisherfd;
@@ -43,5 +44,8 @@ public:
     }
 };
 
+
 } // namespace asyncps
-#endif
+
+#endif /* ASYNCPS_CHANNEL_H */
+

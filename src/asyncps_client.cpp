@@ -17,25 +17,15 @@ AsyncClient::AsyncClient(string host, int port, int blocking){
                                         castAsAddress(&address),
                                         sizeof(struct sockaddr_in));
     if(ret == EFAILED){
-        // interrupted, try again
-        if(errno == EINTR){
+        if(errno == EINTR){ /* interrupted, try again */
             goto connect_again;
-        }
-
-        // connection is in place(nio socket)
-        else if(errno == EINPROGRESS){
+        }else if(errno == EINPROGRESS){
             status = CONNECTING;        
-        }
-
-        // could not connect
-        // a bad thing happened
-        else{
+        }else{
             close(fd);
             status = DOWN;
         }
-    }
-    // connect suceed
-    else{
+    }else{
         status = CONNECTED;
     }
 }
